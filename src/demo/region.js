@@ -1,6 +1,6 @@
-const region = {
+export default {
   id: "1",
-  name: "SeaTac",
+  name: "Demo Region w/ DMAs and Locations",
   type: "location",
   locations: [
     {
@@ -27,14 +27,35 @@ const region = {
   ],
   designatedMarketAreas: [
     {
-      id: "1",
-      name: "DMA GREATER SEATTLE AREA"
+      country: 'United States',
+      areas: [
+        {
+          id: "sea",
+          name: "Greater Seattle, WA Area"
+        },
+        {
+          id: "tac",
+          name: "Greater Tacoma, WA Area"
+        },
+        {
+          id: "oly",
+          name: "Greater Olympia, WA Area"
+        }
+      ]
     },
     {
-      id: "1",
-      name: "DMA GREATER TACOMA AREA"
+      country: 'Canada',
+      areas: [
+        {
+          id: "1",
+          name: "Greater Vancouver, BC Area"
+        },
+        {
+          id: "2",
+          name: "Greater Richmond, BC Area"
+        },
+      ]
     }
+
   ]
 };
-
-export default region;

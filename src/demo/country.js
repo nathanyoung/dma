@@ -1,5 +1,4 @@
 export const COUNTRIES = [
-  { value: "", label: "" },
   { value: "afg", label: "Afghanistan" },
   { value: "ala", label: "Aland Islands" },
   { value: "alb", label: "Albania" },
@@ -254,4 +253,27 @@ export const COUNTRIES = [
   { value: "yem", label: "Yemen" },
   { value: "zmb", label: "Zambia" },
   { value: "zwe", label: "Zimbabwe" }
+];
+
+export const DMA = [
+  { value: "1", label: "DMA Example 1" },
+  { value: "2", label: "DMA Example 2" },
+  { value: "3", label: "DMA Example 3" },
+  { value: "4", label: "DMA Example 4" },
+  { value: "5", label: "DMA Example 5" },
+  { value: "6", label: "DMA Example 6" },
+  { value: "7", label: "DMA Example 7" },
+  { value: "8", label: "DMA Example 8" },
+  { value: "9", label: "DMA Example 9" },
+  { value: "10", label: "DMA Example 10" },
+  { value: "11", label: "DMA Example 11" },
+  { value: "12", label: "DMA Example 12" },
+  { value: "13", label: "DMA Example 13" },
+  { value: "14", label: "DMA Example 14" },
+  { value: "15", label: "DMA Example 15" },
+  { value: "16", label: "DMA Example 16" },
+  { value: "17", label: "DMA Example 17" },
+  { value: "18", label: "DMA Example 18" },
+  { value: "19", label: "DMA Example 19" },
+  { value: "20", label: "DMA Example 20" },
 ];

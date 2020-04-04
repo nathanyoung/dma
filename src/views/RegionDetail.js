@@ -11,15 +11,29 @@ import {
   FieldSelect,
   FieldText,
   Link,
-  Modal
+  Modal,
+  useToast,
 } from "@istreamplanet/pebble";
 
-import region from "../demo/region";
-import { COUNTRIES } from "../demo/country";
+import demoRegion from "../demo/region";
+import { COUNTRIES, DMA } from "../demo/country";
 
-function RegionDetail() {
+
+function RegionDetail({ region }) {
   const [addDMAModal, setAddDMAModal] = useState(false);
   const [addLocationModal, setAddLocationModal] = useState(false);
+
+  const addDma = (dma) => {
+    console.log('adding dma')
+    // setRegion({
+    //   ...region,
+    //   designatedMarketAreas: {
+    //     ...region.designatedMarketAreas,
+    //     ...dma
+    //   }
+    // })
+  }
+
   const renderLocations = () => {
     return (
       <Card
@@ -57,24 +71,30 @@ function RegionDetail() {
   const renderDesignatedMarketAreas = () => (
     <Card
       title="Designated Market Area"
-      sectioned
+      overflow="initial"
       headerActions={
         <Button
-          onClick={() => setAddDMAModal(true)}
+          onClick={() => setAddDMAModal(!addDMAModal)}
           size="small"
-          icon="add-circle"
-          primary
+          icon={addDMAModal ? null : "add-circle"}
+          primary={!addDMAModal}
         >
-          add
+          {addDMAModal ? 'cancel' : 'add'}
         </Button>
       }
     >
+      {addDMAModal && <DMAForm handleAdd={addDma} handleClose={setAddDMAModal} />}
       {region.designatedMarketAreas.map((dma, index) => {
-        const { name } = dma;
+        const { country, areas } = dma;
         return (
-          <Block alignItems="center" key={index}>
-            <Block flex>{dma.name}</Block>
-            <RemoveButton name={name} />
+          <Block border={index > 0 ? 'top' : null} margin="3 0 0 0" padding={[3, '3 4', '3 5']} alignItems="start" key={index}>
+            <Block width="200px" className="fw-700">{country}</Block>
+            <Block className="list-unstyled" flex direction="column" itemSpacing="2" as="ul">
+              {areas.map((area, i) => (
+                <li key={i}>{area.name}</li>
+              ))}
+            </Block>
+            <RemoveButton />
           </Block>
         );
       })}
@@ -83,30 +103,6 @@ function RegionDetail() {
 
   return (
     <>
-      <div id="fieldSelectTarget" style={{ zIndex: 10000 }} />
-      {addDMAModal && (
-        <Modal
-          mobileFullScreen
-          title="Add Designated Market Area"
-          onRequestClose={() => setAddDMAModal(!addDMAModal)}
-          showing={addDMAModal}
-          footer={[
-            <Button onClick={() => setAddDMAModal(!addDMAModal)}>
-              Cancel
-            </Button>,
-            <Button primary onClick={() => setAddDMAModal(!addDMAModal)}>
-              Add Designated Market Area
-            </Button>
-          ]}
-        >
-          <FieldSelect
-            label="Country"
-            options={COUNTRIES}
-            menuPortalTarget={document.getElementById("fieldSelectTarget")}
-          />
-        </Modal>
-      )}
-
       {addLocationModal && (
         <>
           <Modal
@@ -169,6 +165,11 @@ function RegionDetail() {
   );
 }
 
+RegionDetail.defaultProps = {
+  region: demoRegion
+}
+
+
 export default RegionDetail;
 
 function RemoveButton({ name }) {
@@ -198,7 +199,7 @@ function RemoveButton({ name }) {
           {`Remove ${name} from the region?`}
         </Modal>
       )}
-      <Block alignItems="end">
+      <Block alignSelf="center" alignItems="end">
         <Button
           icon="close"
           className="neutral-400 red-hover"
@@ -209,4 +210,64 @@ function RemoveButton({ name }) {
       </Block>
     </>
   );
+}
+
+
+function DMAForm({ handleAdd, handleClose }) {
+
+  const toast = useToast();
+
+  const [country, setCountry] = useState();
+  const [dma, setDma] = useState();
+
+  const handleSave = () => {
+    handleAdd({
+      country: country,
+      areas: dma,
+    })
+    handleClose(false)
+    toast({
+      type: 'success',
+      title: `Market Area Added`,
+    });
+  }
+
+  return (
+    <Block
+      displayBlock
+      margin={['3 0 0 0', '4 0 0 0', '5 0 0 0']}
+      background="neutral-200"
+      border="top"
+    >
+      <FormGroup title="Add DMA" description="Select a country and choose market areas for the region">
+        <FieldSelect
+          autoFocus
+          id="dmaCountry"
+          label="Country"
+          options={COUNTRIES}
+          onChange={(object) => setCountry(object.value)}
+        />
+
+        <FieldSelect
+          disabled={country === undefined}
+          id="dma"
+          label="Designated Market Area"
+          options={DMA}
+          multiSelect
+          showCheckbox
+          placeholder="Select a country first"
+        />
+      </FormGroup>
+      <Block border="bottom" flex padding={[3, 4, 5]} justify="end">
+        <ButtonGroup>
+          <Button onClick={() => handleClose(false)}>
+            Cancel
+            </Button>
+          <Button primary onClick={handleSave}>
+            Add Designated Market Area
+            </Button>
+        </ButtonGroup>
+      </Block>
+    </Block>
+  )
 }
