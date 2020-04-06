@@ -20,40 +20,37 @@ import { COUNTRIES, DMA } from "../demo/country";
 
 
 function RegionDetail({ region }) {
-  const [addDMAModal, setAddDMAModal] = useState(false);
+  const [addDMA, setAddDMA] = useState(false);
   const [addLocationModal, setAddLocationModal] = useState(false);
 
   const addDma = (dma) => {
-    console.log('adding dma')
-    // setRegion({
-    //   ...region,
-    //   designatedMarketAreas: {
-    //     ...region.designatedMarketAreas,
-    //     ...dma
-    //   }
-    // })
+    console.log('adding dma', dma)
+  }
+
+  const addLocation = (location) => {
+    console.log('adding location', location)
   }
 
   const renderLocations = () => {
     return (
       <Card
         title="Location"
-        sectioned
         headerActions={
           <Button
+            onClick={() => setAddLocationModal(!addLocationModal)}
             size="small"
-            icon="add-circle"
-            primary
-            onClick={() => setAddLocationModal(true)}
+            icon={addLocationModal ? null : "add-circle"}
+            primary={!addLocationModal}
           >
-            add
+            {addLocationModal ? 'Cancel' : 'Add'}
           </Button>
         }
       >
+        {addLocationModal && <LocationForm handleAdd={addLocation} handleClose={setAddLocationModal} />}
         {region.locations.map((location, index) => {
           const { country, state, city, zipCode } = location;
           return (
-            <Block alignItems="center" key={index}>
+            <Block border={index > 0 ? 'top' : null} alignItems="center" padding={[3, '3 4', '3 5']} key={index}>
               <Block flex direction={["column", "row"]}>
                 <Block flex>{country}</Block>
                 <Block flex>{state}</Block>
@@ -74,16 +71,16 @@ function RegionDetail({ region }) {
       overflow="initial"
       headerActions={
         <Button
-          onClick={() => setAddDMAModal(!addDMAModal)}
+          onClick={() => setAddDMA(!addDMA)}
           size="small"
-          icon={addDMAModal ? null : "add-circle"}
-          primary={!addDMAModal}
+          icon={addDMA ? null : "add-circle"}
+          primary={!addDMA}
         >
-          {addDMAModal ? 'cancel' : 'add'}
+          {addDMA ? 'Cancel' : 'Add'}
         </Button>
       }
     >
-      {addDMAModal && <DMAForm handleAdd={addDma} handleClose={setAddDMAModal} />}
+      {addDMA && <DMAForm handleAdd={addDma} handleClose={setAddDMA} />}
       {region.designatedMarketAreas.map((dma, index) => {
         const { country, areas } = dma;
         return (
@@ -103,33 +100,6 @@ function RegionDetail({ region }) {
 
   return (
     <>
-      {addLocationModal && (
-        <>
-          <Modal
-            mobileFullScreen
-            title="Add Location"
-            onRequestClose={() => setAddLocationModal(!addLocationModal)}
-            showing={addLocationModal}
-            footer={[
-              <Button onClick={() => setAddLocationModal(!addLocationModal)}>
-                Cancel
-              </Button>,
-              <Button
-                primary
-                onClick={() => setAddLocationModal(!addLocationModal)}
-              >
-                Add Location
-              </Button>
-            ]}
-          >
-            <FieldSelect
-              menuPortalTarget={document.getElementById("fieldSelectTarget")}
-              label="Country"
-              options={COUNTRIES}
-            />
-          </Modal>
-        </>
-      )}
       <Block displayBlock padding={[3, 4, 6, "6 7"]} itemSpacing={[3, 4, 5]}>
         <Header
           title={region.name}
@@ -247,7 +217,6 @@ function DMAForm({ handleAdd, handleClose }) {
           options={COUNTRIES}
           onChange={(object) => setCountry(object.value)}
         />
-
         <FieldSelect
           disabled={country === undefined}
           id="dma"
@@ -256,6 +225,7 @@ function DMAForm({ handleAdd, handleClose }) {
           multiSelect
           showCheckbox
           placeholder="Select a country first"
+          onChange={(object) => setDma(object)}
         />
       </FormGroup>
       <Block border="bottom" flex padding={[3, 4, 5]} justify="end">
@@ -266,6 +236,71 @@ function DMAForm({ handleAdd, handleClose }) {
           <Button primary onClick={handleSave}>
             Add Designated Market Area
             </Button>
+        </ButtonGroup>
+      </Block>
+    </Block>
+  )
+}
+
+function LocationForm({ handleAdd, handleClose }) {
+
+  const toast = useToast();
+
+  const [country, setCountry] = useState();
+
+  const handleSave = () => {
+    handleAdd({
+      country: country,
+    })
+    handleClose(false)
+    toast({
+      type: 'success',
+      title: `Location Area Added`,
+    });
+  }
+
+  return (
+    <Block
+      displayBlock
+      margin={['3 0 0 0', '4 0 0 0', '5 0 0 0']}
+      background="neutral-200"
+      border="top"
+    >
+      <FormGroup title="Add Location" description="Define the location area">
+        <Block flex width="100%" direction={['column', 'row']} itemSpacing="3">
+          <FieldSelect
+            autoFocus
+            id="country"
+            label="Country"
+            options={COUNTRIES}
+            onChange={(object) => setCountry(object.value)}
+          />
+          <FieldSelect
+            id="state"
+            label="State/Province"
+            options={COUNTRIES}
+            onChange={(object) => setCountry(object.value)}
+          />
+        </Block>
+        <Block flex width="100%" direction={['column', 'row']} itemSpacing="3">
+          <FieldSelect
+            id="city"
+            label="City"
+            options={COUNTRIES}
+            onChange={(object) => setCountry(object.value)}
+          />
+          <FieldText
+            id="postalCode"
+            label="Postal/Zip Code"
+            options={COUNTRIES}
+            onChange={(object) => setCountry(object.value)}
+          />
+        </Block>
+      </FormGroup>
+      <Block border="bottom" flex padding={[3, 4, 5]} justify="end">
+        <ButtonGroup>
+          <Button onClick={() => handleClose(false)}>Cancel</Button>
+          <Button primary onClick={handleSave}>Location</Button>
         </ButtonGroup>
       </Block>
     </Block>
